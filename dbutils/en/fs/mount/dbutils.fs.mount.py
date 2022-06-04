@@ -39,8 +39,8 @@ dbutils.fs.help()
 
 # MAGIC %scala
 # MAGIC //definimos las variables para acceder a la cuenta de AWS, lo idea es que estubieran por secrets
-# MAGIC val awsAccessKey = "AKIAJBRYNXGHORDHZB4A"
-# MAGIC val awsSecretKey = "a0BzE1bSegfydr3%2FGE3LSPM6uIV5A4hOUfpH8aFF"
+# MAGIC val awsAccessKey = "xxxx"
+# MAGIC val awsSecretKey = "xxx%xx"
 # MAGIC val awsUrl = s"s3a://${awsAccessKey}:${awsSecretKey}@databricks-corp-training/common"
 # MAGIC val awsAuth = s"${awsAccessKey}:${awsSecretKey}"
 # MAGIC val awsGenericPath = "s3a://databricks-corp-training/common"
