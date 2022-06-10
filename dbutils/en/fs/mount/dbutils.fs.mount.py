@@ -1,7 +1,35 @@
 # Databricks notebook source
+# MAGIC %md 
+# MAGIC # MOUNT USING DBUTILS
+# MAGIC 
+# MAGIC -----
+# MAGIC  ```
+# MAGIC mount
+# MAGIC mount(source: String, mountPoint: String, encryptionType: String = "", owner: String = null, extraConfigs: Map = Map.empty[String, String]): boolean -> Mounts the given source directory into DBFS at the given mount point
+# MAGIC mounts: Seq -> Displays information about what is mounted within DBFS
+# MAGIC refreshMounts: boolean -> Forces all machines in this cluster to refresh their mount cache, ensuring they receive the most recent information
+# MAGIC unmount(mountPoint: String): boolean -> Deletes a DBFS mount point
+# MAGIC updateMount(source: String, mountPoint: String, encryptionType: String = "", owner: String = null, extraConfigs: Map = Map.empty[String, String]): boolean -> Similar to mount(), but updates an existing mount point (if present) instead of creating a new one
+# MAGIC 
+# MAGIC  ```
+# MAGIC 
+# MAGIC TO DO
+
+# COMMAND ----------
+
+dbutils.fs.help()
+
+# COMMAND ----------
+
 # MAGIC %md
+# MAGIC ## AZURE
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC  ### BASICO
 # MAGIC  
-# MAGIC  ### TRABAJANDO CON FSUTILS.MOUNT
+# MAGIC  TRABAJANDO CON FSUTILS.MOUNT
 # MAGIC  
 # MAGIC  permite proporcionar acceso local a los archivos almacenados en la nube.
 # MAGIC  
@@ -36,6 +64,50 @@
 # MAGIC     ``` 
 # MAGIC     
 # MAGIC   ```    
+# MAGIC  https://docs.databricks.com/data/data-sources/azure/adls-gen2/azure-datalake-gen2-sp-access.html
+# MAGIC  https://docs.databricks.com/_static/notebooks/adls-gen2-service-principal.html
+# MAGIC 
+# MAGIC  
+# MAGIC  
+# MAGIC  ```
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC ## MOUNT
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### AZURE
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC  #### AVANZADO
+# MAGIC  
+# MAGIC  TRABAJANDO CON FSUTILS.MOUNT
+# MAGIC  
+# MAGIC  permite proporcionar acceso local a los archivos almacenados en la nube.
+# MAGIC  
+# MAGIC  1.    'dbutils.fs'
+# MAGIC  2.   '%fs'
+# MAGIC  3.   '%sh'
+# MAGIC  
+# MAGIC 
+# MAGIC  ```
+# MAGIC  
+# MAGIC  
+# MAGIC  
+# MAGIC  
+# MAGIC  	source="wasbs://<container-name>@<storage-account-name>.blob.core.windows.net"
+# MAGIC  	mount_point="/mnt/<mount_name>",
+# MAGIC  	extra_config= {
+# MAGIC  	"fs.azure.accout.key.<storage-account-name>.blob.core.windows.net": "<AccountKey>"
+# MAGIC      
+# MAGIC      (1) service principal - usuario
+# MAGIC      https://docs.databricks.com/data/data-sources/azure/adls-gen2/azure-datalake-gen2-sp-access.html
+# MAGIC   
 # MAGIC  https://docs.databricks.com/data/data-sources/azure/adls-gen2/azure-datalake-gen2-sp-access.html
 # MAGIC  https://docs.databricks.com/_static/notebooks/adls-gen2-service-principal.html
 # MAGIC 
@@ -153,8 +225,210 @@
 
 # COMMAND ----------
 
-# ayuda 
-dbutils.fs.help()
+# MAGIC %md
+# MAGIC 
+# MAGIC ###### PYTHON
+
+# COMMAND ----------
+
+dbutils.secrets.list(scope="kvluchito")
+
+# COMMAND ----------
+
+       - app name
+          - secret value
+          - application (client) id
+          - directory (tenant) ID
+        
+        creado
+        storage
+            datalakegen2lucho
+        containers
+            BRONZE
+            silver
+            gold
+        
+
+# COMMAND ----------
+
+
+
+# COMMAND ----------
+
+account_name = "datalakegen2lucho"
+container_name = "bronze"
+mount_point = "/mnt/bronze"
+
+application_id = dbutils.secrets.get(scope="kvluchito", key="SPDATABRICKS-APPID")
+tenant_id = dbutils.secrets.get(scope="kvluchito",key="SPDATABRICKS-TENID")
+autentication_key = dbutils.secrets.get(scope="kvluchito",key="SPDATABRICKS-SV")
+source = f"abfss://{container_name}@{account_name}.dfs.core.windows.net/" # + folder specific
+endpoint = f"https://login.microsoftonline.com/{tenant_id}/oauth2/token"
+
+config = {
+    "fs.azure.account.auth.type": "OAuth",
+    "fs.azure.account.oauth.provider.type": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
+    "fs.azure.account.oauth2.client.id": application_id,
+    "fs.azure.account.oauth2.client.secret": autentication_key,
+    "fs.azure.account.oauth2.client.endpoint": endpoint
+}
+
+endpoint
+
+# COMMAND ----------
+
+dbutils.fs.mount(
+  source=source,
+  mount_point=mount_point,
+  extra_configs=config)
+
+# COMMAND ----------
+
+# checking mounted sources
+for mount in dbutils.fs.mounts():
+    print(f"mounted : {mount}")
+
+# COMMAND ----------
+
+display(dbutils.fs.mounts())
+
+# COMMAND ----------
+
+# MAGIC %fs ls /mnt/bronze
+
+# COMMAND ----------
+
+# MAGIC %sh cat /dbfs/mnt/bronze/bronze.log
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ##### SCALA
+
+# COMMAND ----------
+
+# MAGIC %scala
+# MAGIC 
+# MAGIC val account_name = "datalakegen2lucho"
+# MAGIC val container_name = "silver"
+# MAGIC val mount_point = "/mnt/silver"
+# MAGIC 
+# MAGIC val application_id = dbutils.secrets.get(scope="kvluchito", key="SPDATABRICKS-APPID")
+# MAGIC val tenant_id = dbutils.secrets.get(scope="kvluchito",key="SPDATABRICKS-TENID")
+# MAGIC val autentication_key = dbutils.secrets.get(scope="kvluchito",key="SPDATABRICKS-SV")
+# MAGIC val source = s"abfss://$container_name@$account_name.dfs.core.windows.net/" // + folder specific
+# MAGIC val endpoint = s"https://login.microsoftonline.com/$tenant_id/oauth2/token"
+# MAGIC 
+# MAGIC 
+# MAGIC val configs = Map(
+# MAGIC   "fs.azure.account.auth.type" -> "OAuth",
+# MAGIC   "fs.azure.account.oauth.provider.type" -> "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
+# MAGIC   "fs.azure.account.oauth2.client.id" -> application_id,
+# MAGIC   "fs.azure.account.oauth2.client.secret" -> autentication_key,
+# MAGIC   "fs.azure.account.oauth2.client.endpoint" -> endpoint
+# MAGIC )
+# MAGIC 
+# MAGIC 
+# MAGIC 
+# MAGIC dbutils.fs.mount(
+# MAGIC   source = source,
+# MAGIC   mountPoint = "/mnt/silver",
+# MAGIC   extraConfigs = configs)
+
+# COMMAND ----------
+
+# MAGIC %scala
+# MAGIC // checking mounted sources
+# MAGIC dbutils.fs.mounts.foreach(mount => println(s"mounted : ${mount.mountPoint} | source :  ${mount.source} : encryptionType : ${mount.encryptionType}"))  
+
+# COMMAND ----------
+
+# MAGIC %scala
+# MAGIC display(dbutils.fs.mounts)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ##### SPARK
+
+# COMMAND ----------
+
+spark.conf.set("fs.azure.account.auth.type.<storage-account-name>.dfs.core.windows.net", "OAuth")
+spark.conf.set("fs.azure.account.oauth.provider.type.<storage-account-name>.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider")
+spark.conf.set("fs.azure.account.oauth2.client.id.<storage-account-name>.dfs.core.windows.net", "<application-id>")
+spark.conf.set("fs.azure.account.oauth2.client.secret.<storage-account-name>.dfs.core.windows.net", dbutils.secrets.get(scope="<scope-name>",key="<service-credential-key-name>"))
+spark.conf.set("fs.azure.account.oauth2.client.endpoint.<storage-account-name>.dfs.core.windows.net", "https://login.microsoftonline.com/<directory-id>/oauth2/token")
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC ## UNMOUNT
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC ### PYTHON
+
+# COMMAND ----------
+
+# MAGIC %python
+# MAGIC dbutils.fs.unmount("/mnt/bronze")
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC ### SCALA
+
+# COMMAND ----------
+
+# MAGIC %scala
+# MAGIC dbutils.fs.unmount("/mnt/silver")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## MOUNTS
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC ### PYTHON
+
+# COMMAND ----------
+
+# checking mounted sources
+for mount in dbutils.fs.mounts():
+    print(f"mounted : {mount}")
+
+# COMMAND ----------
+
+display(dbutils.fs.mounts())
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC ### SCALA
+
+# COMMAND ----------
+
+# MAGIC %scala
+# MAGIC // checking mounted sources
+# MAGIC dbutils.fs.mounts.foreach(mount => println(s"mounted : ${mount.mountPoint} | source :  ${mount.source} : encryptionType : ${mount.encryptionType}"))  
+
+# COMMAND ----------
+
+# MAGIC %scala
+# MAGIC display(dbutils.fs.mounts)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## AWS
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### BASICO
 
 # COMMAND ----------
 
@@ -166,6 +440,31 @@ dbutils.fs.help()
 # MAGIC val awsAuth = s"${awsAccessKey}:${awsSecretKey}"
 # MAGIC val awsGenericPath = "s3a://databricks-corp-training/common"
 # MAGIC dbutils.fs.mount(awsUrl, "/mnt/demo/")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC ### AVANZADO
+
+# COMMAND ----------
+
+# ayuda 
+dbutils.fs.help()
+
+# COMMAND ----------
+
+ 
+ dato el caso que quisieramos trabajar con ARN esta seria el modo
+ ```scala
+ dbutils.fs.mount("s3a://<s3-bucket-name>", "/mnt/<s3-bucket-name>",
+   extraConfigs = Map(
+     "fs.s3a.credentialsType" -> "AssumeRole",
+     "fs.s3a.stsAssumeRole.arn" -> "arn:aws:iam::<bucket-owner-acct-id>:role/MyRoleB",
+     "spark.hadoop.fs.s3a.acl.default" -> "BucketOwnerFullControl"
+   )
+ )
+ 
 
 # COMMAND ----------
 

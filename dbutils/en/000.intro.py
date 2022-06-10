@@ -7,3 +7,10 @@
 # COMMAND ----------
 
 dbutils.help()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC 
+# MAGIC es importante aclarar que dbsutils puede ser accedida por python y por scala, la idea es verificar bien este paquete, ya que se he observado diferentes variaciones en su funcionamiento dependiendo del lenguaje.
