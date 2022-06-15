@@ -294,6 +294,31 @@ display(dbutils.fs.mounts())
 
 # COMMAND ----------
 
+
+notas para agregar: cuando escribes directamente en la unidad montada, automaticamente
+la información escrita desde databricks se sincroniza en el storage, el funcionamiento
+es bidireccional
+
+
+
+# COMMAND ----------
+
+# MAGIC %sh cal > /tmp/workload_1_writing.txt 
+
+# COMMAND ----------
+
+# MAGIC %fs cp file:/tmp/workload_1_writing.txt /mnt/bronze
+
+# COMMAND ----------
+
+# MAGIC %fs ls /mnt/bronze
+
+# COMMAND ----------
+
+# MAGIC %fs ls /mnt/bronze
+
+# COMMAND ----------
+
 # MAGIC %fs ls /mnt/bronze
 
 # COMMAND ----------
@@ -419,6 +444,24 @@ display(dbutils.fs.mounts())
 
 # MAGIC %scala
 # MAGIC display(dbutils.fs.mounts)
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## REFRESHMOUNTS
+
+# COMMAND ----------
+
+# TODO
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ## UPDATEMOUNT
+
+# COMMAND ----------
+
+# TODO
 
 # COMMAND ----------
 
