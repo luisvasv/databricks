@@ -8,6 +8,18 @@
 
 # COMMAND ----------
 
+# MAGIC %run ../../utilities/mount/with_storage_account $zone="bronze"
+
+# COMMAND ----------
+
+# MAGIC %run ../../utilities/mount/without_storage_account $zone="bronze"
+
+# COMMAND ----------
+
+dbutils.notebook.entry_point.getDbutils().notebook().getContext().notebookPath().get()
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ## CREATE TABLE
 # MAGIC ```bash
