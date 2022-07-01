@@ -370,6 +370,17 @@ DESCRIBE HISTORY dml LIMIT 1
 -- COMMAND ----------
 
 -- MAGIC %md
+-- MAGIC ## DESCRIBE DETAIL
+-- MAGIC 
+-- MAGIC it retrieve detailed information about a Delta table (for example, number of files, data size) 
+
+-- COMMAND ----------
+
+DESCRIBE DETAIL test.dml;
+
+-- COMMAND ----------
+
+-- MAGIC %md
 -- MAGIC ## TIME TRAVEL
 -- MAGIC 
 -- MAGIC We can use a query an old snapshot of a table using time travel. Time travel is a specialized read on our dataset which allows us to read previous versions of our data. There are several ways to go about this. 
@@ -459,7 +470,7 @@ ZORDER BY (citydc);
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC ## BLOOM FILTER INDEX
+-- MAGIC ## ** BLOOM FILTER INDEX
 -- MAGIC 
 -- MAGIC 
 -- MAGIC ## Bloom Filter Indexes
@@ -526,6 +537,35 @@ ZORDER BY (citydc);
 
 -- COMMAND ----------
 
+-- MAGIC %md
+-- MAGIC ##  RESTORE
+-- MAGIC 
+-- MAGIC You can restore a Delta table to its earlier state by using the `RESTORE` command. A Delta table internally maintains historic versions of the table that enable it to be restored to an earlier state
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ###  TABLE
+-- MAGIC 
+-- MAGIC `RESTORE TABLE db.target_table TO VERSION AS OF <version>`
+
+-- COMMAND ----------
+
+-- TODO
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ###  LOCATION
+-- MAGIC 
+-- MAGIC `RESTORE TABLE delta.`/data/target/` TO TIMESTAMP AS OF <timestamp>`
+
+-- COMMAND ----------
+
+-- TODO
+
+-- COMMAND ----------
+
 VACUUM dml RETAIN 168 HOURS DRY RUN
 
 -- COMMAND ----------
@@ -551,3 +591,24 @@ SET TBLPROPERTIES (
   delta.logRetentionDuration = '3650 days',
   delta.deletedFileRetentionDuration = '3650 days'
 )
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ##  GENERATE MANIFEST
+-- MAGIC 
+-- MAGIC manifest file for a Delta table that can be used by other processing engines (that is, other than Apache `Spark`) to read the Delta table. For example, to generate a manifest file that can be used by Presto and Athena to read a Delta table
+-- MAGIC 
+-- MAGIC Note: for the moment is only supported on AWS S3 for other cloud providers you will see:
+-- MAGIC 
+-- MAGIC ```
+-- MAGIC 
+-- MAGIC Error in SQL statement: UnsupportedOperationException: 
+-- MAGIC Generation of manifests for Delta table is currently only supported on AWS S3.
+-- MAGIC To disable this check, run the following SQL command.
+-- MAGIC    SET spark.databricks.delta.symlinkFormatManifest.fileSystemCheck.enabled = false
+-- MAGIC ```
+
+-- COMMAND ----------
+
+GENERATE symlink_format_manifest FOR TABLE delta.`/mnt/bronze/table_dml`

@@ -841,6 +841,35 @@ SELECT * FROM test_json_like;
 -- COMMAND ----------
 
 -- TO ANALIZE https://docs.databricks.com/spark/latest/spark-sql/language-manual/sql-ref-syntax-ddl-alter-table.html
+https://docs.delta.io/latest/delta-constraints.html
+
+-- COMMAND ----------
+
+
+
+-- COMMAND ----------
+
+
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC One of the useful features of deep cloning is the ability to set different table properties for file and log retention. This allows production tables to have optimized performance while maintaining files for auditing and regulatory compliance. 
+-- MAGIC 
+-- MAGIC The cell below sets the log and deleted file retention periods to 10 years.
+
+-- COMMAND ----------
+
+-- MAGIC %sql
+-- MAGIC ALTER TABLE sensors_backup
+-- MAGIC SET TBLPROPERTIES (
+-- MAGIC   delta.logRetentionDuration = '3650 days',
+-- MAGIC   delta.deletedFileRetentionDuration = '3650 days'
+-- MAGIC )
+
+-- COMMAND ----------
+
+
 
 -- COMMAND ----------
 
@@ -880,7 +909,3 @@ SELECT * FROM test_json_like;
 -- MAGIC `MSCK REPAIR TABLE table_name [ {ADD | DROP | SYNC} PARTITIONS]`
 -- MAGIC 
 -- MAGIC Note:  only works with partitioned tables
-
--- COMMAND ----------
-
-
