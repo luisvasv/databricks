@@ -3,7 +3,7 @@
 # MAGIC # WIDGETS
 # MAGIC 
 # MAGIC <div style="text-align: center; line-height: 0; padding-top: 9px;">
-# MAGIC   <img src="https://is2-ssl.mzstatic.com/image/thumb/Purple114/v4/f4/c5/51/f4c551c7-7c20-1103-9738-e761e4a89ade/source/200x200bb.jpg" alt="ConboBox" style="width: 200">
+# MAGIC   <img src="https://is2-ssl.mzstatic.com/image/thumb/Purple114/v4/f4/c5/51/f4c551c7-7c20-1103-9738-e761e4a89ade/source/200x200bb.jpg" alt="ConboBox" style="width: 100">
 # MAGIC </div>
 
 # COMMAND ----------

@@ -251,7 +251,32 @@ dbutils.secrets.list(scope="kvluchito")
 
 # COMMAND ----------
 
+account_name = "datalakegen2lucho"
+container_name = "installers"
+mount_point = "/mnt/installers"
 
+application_id = dbutils.secrets.get(scope="kvluchito", key="SPDATABRICKS-APPID")
+tenant_id = dbutils.secrets.get(scope="kvluchito",key="SPDATABRICKS-TENID")
+autentication_key = dbutils.secrets.get(scope="kvluchito",key="SPDATABRICKS-SV")
+source = f"abfss://{container_name}@{account_name}.dfs.core.windows.net/" # + folder specific
+endpoint = f"https://login.microsoftonline.com/{tenant_id}/oauth2/token"
+
+config = {
+    "fs.azure.account.auth.type": "OAuth",
+    "fs.azure.account.oauth.provider.type": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
+    "fs.azure.account.oauth2.client.id": application_id,
+    "fs.azure.account.oauth2.client.secret": autentication_key,
+    "fs.azure.account.oauth2.client.endpoint": endpoint
+}
+
+endpoint
+
+# COMMAND ----------
+
+dbutils.fs.mount(
+  source=source,
+  mount_point=mount_point,
+  extra_configs=config)
 
 # COMMAND ----------
 
