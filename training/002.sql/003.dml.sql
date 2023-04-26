@@ -24,7 +24,36 @@ INSERT INTO dml (email,city,active,citydc) VALUES ('lacus@outlook.edu','Ponte ne
 
 -- COMMAND ----------
 
-SELECT *, input_file_name(),input_file_block_length() FROM dml;
+
+
+-- COMMAND ----------
+
+
+
+-- COMMAND ----------
+
+
+
+-- COMMAND ----------
+
+
+
+-- COMMAND ----------
+
+
+
+-- COMMAND ----------
+
+
+
+-- COMMAND ----------
+
+-- MAGIC %md
+-- MAGIC ### FILES AND LENGTH
+
+-- COMMAND ----------
+
+SELECT *, input_file_name(),input_file_block_length() FROM test.dml;
 
 -- COMMAND ----------
 
